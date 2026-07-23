@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Form Validation</title>
+
+    <style>
+        :root {
+            --bg: #ffffff;
+            --card: #f8f8f8;
+            --text: #2d2d2d;
+            --label: #5f5f5f;
+            --border: #d8d8d8;
+            --accent: #5f3bff;
+            --error: #d93025;
+            --success: #188038;
+            --input: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            margin: 0 0 16px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            margin: 0 0 20px;
+            text-align: center;
+            color: var(--label);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--label);
+            font-size: 0.95rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--input);
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        input.invalid {
+            border-color: var(--error);
+        }
+
+        .error-message {
+            margin: 6px 0 0;
+            color: var(--error);
+            font-size: 0.9rem;
+            min-height: 18px;
+        }
+
+        .success-message {
+            margin: 14px 0 0;
+            color: var(--success);
+            font-size: 0.95rem;
+            text-align: center;
+            min-height: 20px;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        button[type="submit"]:hover {
+            opacity: 0.95;
+        }
+
+        .password-field {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .password-field input {
+            flex: 1;
+        }
+
+        .toggle-password {
+            background: transparent;
+            border: none;
+            color: var(--accent);
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .switch-text {
+            margin: 18px 0 0;
+            text-align: center;
+            color: var(--label);
+            font-size: 0.95rem;
+        }
+
+        .switch-text a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Register Form Validation</h2>
+        
+        <form id="registerForm">
+            <div class="input-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" placeholder="Enter your name" autocomplete="name">
+                <p class="error-message" id="nameError"></p>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter your email" autocomplete="email">
+                <p class="error-message" id="emailError"></p>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <div class="password-field">
+                    <input type="password" id="password" placeholder="Choose a password" autocomplete="new-password">
+                    <button type="button" class="toggle-password" data-target="password">Show</button>
+                </div>
+                <div class="strength-bar" id="strengthBar"><span></span></div>
+                <p class="hint">Enter a strong password.</p>
+                <p class="error-message" id="passwordError"></p>
+            </div>
+
+            <div class="input-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <div class="password-field">
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password" autocomplete="new-password">
+                    <button type="button" class="toggle-password" data-target="confirmPassword">Show</button>
+                </div>
+                <p class="error-message" id="confirmPasswordError"></p>
+            </div>
+
+            <button type="submit">Register</button>
+            <p class="success-message" id="successMessage"></p>
+            <!-- <p class="switch-text">Already have an account? <a href="login.html">Log in</a></p> -->
+        </form>
+
+    </div>
+
+    <script>
+        const registerForm = document.getElementById('registerForm');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const nameError = document.getElementById('nameError');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        const confirmPasswordError = document.getElementById('confirmPasswordError');
+        const successMessage = document.getElementById('successMessage');
+        const strengthBar = document.getElementById('strengthBar');
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+
+        function setError(input, errorElement, message) {
+            input.classList.add('invalid');
+            errorElement.textContent = message;
+        }
+
+        function clearError(input, errorElement) {
+            input.classList.remove('invalid');
+            errorElement.textContent = '';
+        }
+
+        function updateStrength(password) {
+            const score = password.length > 7 ? 2 : password.length > 4 ? 1 : 0;
+            strengthBar.className = 'strength-bar';
+
+            if (!password) {
+                strengthBar.querySelector('span').style.width = '0';
+                return;
+            }
+
+            if (score === 0) {
+                strengthBar.classList.add('weak');
+            } else if (score === 1) {
+                strengthBar.classList.add('medium');
+            } else {
+                strengthBar.classList.add('strong');
+            }
+        }
+
+        function validateForm() {
+            let valid = true;
+            successMessage.textContent = '';
+
+            clearError(nameInput, nameError);
+            clearError(emailInput, emailError);
+            clearError(passwordInput, passwordError);
+            clearError(confirmPasswordInput, confirmPasswordError);
+
+            if (!nameInput.value.trim()) {
+                setError(nameInput, nameError, 'Name is required.');
+                valid = false;
+            }
+
+            if (!emailInput.value.trim()) {
+                setError(emailInput, emailError, 'Email is required.');
+                valid = false;
+            } else if (!emailPattern.test(emailInput.value.trim())) {
+                setError(emailInput, emailError, 'Enter a valid email.');
+                valid = false;
+            }
+
+            if (!passwordInput.value) {
+                setError(passwordInput, passwordError, 'Password is required.');
+                valid = false;
+            } else if (passwordInput.value.length < 6) {
+                setError(passwordInput, passwordError, 'Password must be at least 6 characters.');
+                valid = false;
+            }
+
+            if (!confirmPasswordInput.value) {
+                setError(confirmPasswordInput, confirmPasswordError, 'Please confirm your password.');
+                valid = false;
+            } else if (passwordInput.value !== confirmPasswordInput.value) {
+                setError(confirmPasswordInput, confirmPasswordError, 'Passwords do not match.');
+                valid = false;
+            }
+
+            return valid;
+        }
+
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.dataset.target;
+                const field = document.getElementById(targetId);
+                const isPassword = field.type === 'password';
+                field.type = isPassword ? 'text' : 'password';
+                button.textContent = isPassword ? 'Hide' : 'Show';
+            });
+        });
+
+        passwordInput.addEventListener('input', () => {
+            updateStrength(passwordInput.value);
+            clearError(passwordInput, passwordError);
+        });
+
+        nameInput.addEventListener('input', () => clearError(nameInput, nameError));
+        emailInput.addEventListener('input', () => clearError(emailInput, emailError));
+        confirmPasswordInput.addEventListener('input', () => clearError(confirmPasswordInput, confirmPasswordError));
+
+        registerForm.addEventListener('submit', event => {
+            event.preventDefault();
+
+            if (!validateForm()) {
+                return;
+            }
+
+            successMessage.textContent = 'Registration successful!';
+            registerForm.reset();
+            updateStrength('');
+
+            setTimeout(() => {
+                successMessage.textContent = '';
+            }, 4000);
+        });
+    </script>
+</html>

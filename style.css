@@ -1,0 +1,49 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    background: black;
+    height: 100vh;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 40px;
+}
+
+.box{
+    width: 120px;
+    height: 120px;
+    background: blue;
+    animation: morph 5s infinite ;
+}
+
+@keyframes morph{
+
+    0%{
+        background: blue;
+        border-radius: 0 50% 50% 0;
+    }
+
+    25%{
+        background: purple;
+        border-radius: 50%;
+    }
+
+    50%{
+        background: orange;
+        border-radius: 50% 0 50% 50%;
+    }
+
+    75%{
+        background: yellowgreen;
+        border-radius: 40% 40% 60% 60%;
+    }
+
+    100%{
+        background: limegreen;
+        border-radius: 50% 20% 50% 20%;
+    }
+}
